@@ -18,7 +18,6 @@ import { Loader } from "@/components/loader";
 import { amountOptions, formSchema, resolutionOptions } from "./constants";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardFooter } from "@/components/ui/card";
 import { useProModal } from "@/hooks/use-pro-modal";
@@ -35,7 +34,7 @@ const ImagePage = () => {
         defaultValues: {
           prompt: "",
           amount: "1",
-          resolution: "1024x1024"
+          resolution: "512x512"
         }
       });
 
@@ -48,11 +47,11 @@ const ImagePage = () => {
 
             const response = await axios.post('/api/image', values);
 
-            //const urls = response.data.map((image: { url: string }) => image.url);
+            const urls = response.data.map((image: { url: string }) => image.url);
 
             // Add the single image URL to the images array
-            setImages([response.data]);
-            form.reset();
+            setImages(urls);
+            // form.reset();
         } catch (error: any) {
             //Open Pro Modal
             console.log(error);
