@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
-import OpenAIApi, { OpenAI } from 'openai';
+import OpenAI from 'openai';
 
 import { checkSubscription } from "@/lib/subscription";
 import { incrementApiLimit, checkApiLimit } from "@/lib/api-limit";
@@ -15,7 +15,7 @@ export async function POST(
     try {
       const { userId } = auth();
       const body = await req.json();
-      const { prompt, amount = 1, resolution = "1024x1024"  } = body;
+      const { prompt, amount = 1, resolution = "512x512"  } = body;
   
       if (!userId) {
         return new NextResponse("Unauthorized", { status: 401 });
@@ -46,17 +46,16 @@ export async function POST(
       
       //Call to OpenAI API
       const response = await openai.images.generate({
-        model: "dall-e-2",
         prompt,
         n: parseInt(amount, 10),
-        size: resolution
+        size: resolution,
       });
   
       if (!isPro) {
       await incrementApiLimit();
       }
   
-      return NextResponse.json(response.data[0].url);
+      return NextResponse.json(response.data);
     } catch (error) {
       console.log('[IMAGE_ERROR]', error);
       return new NextResponse("Internal Error", { status: 500 });
